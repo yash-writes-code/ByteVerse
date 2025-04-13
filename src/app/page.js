@@ -15,7 +15,9 @@ export default function Home() {
   const [connectionError, setConnectionError] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analyzerKey, setAnalyzerKey] = useState(Date.now());
+  const [isSidebarOpen, setSidebarOpen] = useState(false);
   const f ="helo\nhii";
+  
   const exerciseSteps = {
     squat: [
       "Stand with feet shoulder-width apart",
@@ -100,6 +102,10 @@ export default function Home() {
       setAnalyzerKey(Date.now());
     }
     setExercise(newExercise);
+    // Close sidebar on mobile after selecting exercise
+    if (window.innerWidth < 768) {
+      setSidebarOpen(false);
+    }
   };
 
   // Start pose analysis when button is clicked
@@ -107,12 +113,17 @@ export default function Home() {
     setIsAnalyzing(true);
   };
 
-  const stopAnalysing=()=>{
+  const stopAnalysing = () => {
     setIsAnalyzing(false);
     setFeedback("");
     drawInitialMessage();
     setAnalyzerKey(Date.now());
   }
+
+  // Handle responsive sidebar toggle
+  const toggleSidebar = () => {
+    setSidebarOpen(!isSidebarOpen);
+  };
 
   useEffect(() => {
     if (!isAnalyzing) return;
@@ -202,10 +213,24 @@ export default function Home() {
   }, [exercise, isAnalyzing]);
 
   return (
-    <div className="h-screen flex bg-gray-100">
-      {/* Left Sidebar */}
-      <div className="w-64 bg-blue-900 text-white p-4 flex flex-col">
-        <div className="mb-8">
+    <div className="h-screen flex flex-col md:flex-row bg-gray-100 overflow-hidden">
+      {/* Mobile Header with Menu Button */}
+      <div className="md:hidden bg-blue-900 text-white p-3 flex items-center justify-between">
+        <div>
+          <h1 className="text-lg font-bold text-white">FitForm</h1>
+          <p className="text-xs text-blue-200">AI Pose Analyzer</p>
+        </div>
+        <button 
+          onClick={toggleSidebar}
+          className="p-2 rounded bg-blue-800 text-white"
+        >
+          {isSidebarOpen ? "✕" : "☰"}
+        </button>
+      </div>
+
+      {/* Left Sidebar - hidden on mobile by default */}
+      <div className={`${isSidebarOpen ? 'block' : 'hidden'} md:block w-full md:w-64 bg-blue-900 text-white p-4 flex flex-col md:min-h-screen overflow-y-auto z-10 md:z-0 ${isSidebarOpen ? 'fixed inset-0' : ''} md:relative`}>
+        <div className="mb-8 hidden md:block">
           <h1 className="text-xl font-bold text-white">FitForm</h1>
           <p className="text-xs text-blue-200">AI Pose Analyzer</p>
         </div>
@@ -227,7 +252,7 @@ export default function Home() {
               onClick={() => changeExercise(ex)}
             >
               <span className="mr-2 text-yellow-400">{exerciseIcons[ex]}</span>
-              <span className="text-sm capitalize">{ex}</span>
+              <span className="text-sm capitalize">{ex.replace(/_/g, " ")}</span>
               {exercise === ex && (
                 <span className="ml-auto w-2 h-2 bg-yellow-400 rounded-full"></span>
               )}
@@ -243,21 +268,21 @@ export default function Home() {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col overflow-y-auto">
         {/* Header */}
-        <div className="bg-white p-4 border-b text-center">
-          <h1 className="text-xl font-bold text-gray-800">
-            {exercise.charAt(0).toUpperCase() + exercise.slice(1)} Form Checker
+        <div className="bg-white p-3 md:p-4 border-b text-center">
+          <h1 className="text-lg md:text-xl font-bold text-gray-800">
+            {exercise.replace(/_/g, " ").split(" ").map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(" ")} Form Checker
           </h1>
-          <p className="text-sm text-gray-500">
+          <p className="text-xs md:text-sm text-gray-500">
             Real-time form analysis with AI-powered feedback
           </p>
         </div>
 
         {/* Content Area */}
-        <div className="flex-1 p-4 flex flex-col items-center">
+        <div className="flex-1 p-2 md:p-4 flex flex-col items-center overflow-y-auto">
           {/* Video Display - Centered */}
-          <div className="relative w-full max-w-xl h-96 mb-4 rounded overflow-hidden shadow mx-auto">
+          <div className="relative w-full max-w-xl h-64 md:h-96 mb-3 md:mb-4 rounded overflow-hidden shadow mx-auto">
             <video
               ref={videoRef}
               className="hidden"
@@ -280,10 +305,9 @@ export default function Home() {
           </div>
 
           {/* Feedback Section */}
-          <div className="p-2 rounded shadow bg-white w-full max-w-xl mb-4">
-            <p className="text-lg font-semibold">Feedback:</p>
-
-            <p className="whitespace-pre-line">{feedback || "Start analyzing to get feedback"}</p>
+          <div className="p-2 rounded shadow bg-white w-full max-w-xl mb-3 md:mb-4">
+            <p className="text-base md:text-lg font-semibold">Feedback:</p>
+            <p className="whitespace-pre-line text-sm md:text-base">{feedback || "Start analyzing to get feedback"}</p>
           </div>
 
           {/* Start Button */}
@@ -292,10 +316,10 @@ export default function Home() {
               isAnalyzing
                 ? "bg-red-500 hover:bg-red-600"
                 : "bg-green-500 hover:bg-green-600"
-            } text-white font-medium py-2 px-6 rounded-full mb-4`}
+            } text-white font-medium py-2 px-6 rounded-full mb-3 md:mb-4`}
             onClick={() => {
               if (isAnalyzing) {
-               stopAnalysing();
+                stopAnalysing();
               } else {
                 startAnalyzing();
               }
@@ -305,19 +329,18 @@ export default function Home() {
           </button>
 
           {/* Exercise Steps Section */}
-          <div className="w-full max-w-2xl">
-            <h3 className="text-center text-gray-700 mb-3">
-              How to perform {exercise} correctly:
+          <div className="w-full max-w-2xl overflow-y-auto">
+            <h3 className="text-center text-gray-700 mb-2 md:mb-3 text-sm md:text-base">
+              How to perform {exercise.replace(/_/g, " ")} correctly:
             </h3>
-
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
               {exerciseSteps[exercise].map((step, index) => (
-                <div key={index} className="bg-white rounded shadow p-3">
+                <div key={index} className="bg-white rounded shadow p-2 md:p-3">
                   <div className="flex items-center mb-1">
-                    <span className="bg-blue-800 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs mr-2">
+                    <span className="bg-blue-800 text-white rounded-full w-5 h-5 md:w-6 md:h-6 flex items-center justify-center text-xs mr-2">
                       {index + 1}
                     </span>
-                    <span className="font-medium text-sm">Step {index + 1}</span>
+                    <span className="font-medium text-xs md:text-sm">Step {index + 1}</span>
                   </div>
                   <p className="text-xs text-gray-700">{step}</p>
                 </div>
