@@ -86,6 +86,45 @@ export function analyzePose(exercise, landmarks,setFeedback) {
 
     setFeedback(feedback_items.join("\n"));
   }
+  else if (exercise == "tricep_pushdown") {
+    const l_shoulder = landmarks[11];
+    const l_elbow = landmarks[13];
+    const l_wrist = landmarks[15];
+    const l_hip = landmarks[23];
+    const l_ear = landmarks[7];
+  
+    const feedback = [];
+  
+    if (l_shoulder.y < l_hip.y && Math.abs(l_shoulder.x - l_hip.x) < 0.15) {
+        feedback.push("✅ Neutral spine");
+      } else {
+        feedback.push("❌ Lean slightly forward");
+      }
+      
+      // Elbow stable
+      if (Math.abs(l_elbow.x - l_shoulder.x) < 0.018) {
+        feedback.push("✅ Elbow stable");
+      } else {
+        feedback.push("❌ Don't swing elbows forward");
+      }
+      
+      // Shoulder stable
+      if (l_shoulder.y > l_ear.y) {
+        feedback.push("✅ Shoulders stable");
+      } else {
+        feedback.push("❌ Don't shrug shoulders");
+      }
+      
+      // Arm extension
+      const angle = getAngle(l_shoulder, l_elbow, l_wrist);
+      if (angle > 160) {
+        feedback.push("✅ Good arm extension");
+      } else {
+        feedback.push("❌ Extend your arms fully");
+      }
+    setFeedback(feedback.join("\n"));
+  }
+  
   else if(exercise == "inclined_dumbbell_press"){
 
     const TOLERANCE = 10;

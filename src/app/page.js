@@ -49,6 +49,13 @@ export default function Home() {
       "Maintain a slight arch in your back and keep shoulders retracted",
       "Lower weights with control back to starting position",
       "Keep your neck in a neutral position aligned with your spine"
+    ],
+    tricep_pushdown:[
+      "Stand facing the cable machine with a straight posture.",
+      "Grip the bar/rope with an overhand grip, elbows tucked in.",
+      "Push the handle downward by extending your arms fully.",
+      "Keep your upper arms stationary throughout the movement.",
+      "Slowly return to the starting position in a controlled manner."
     ]
   };
 
@@ -57,7 +64,8 @@ export default function Home() {
     squat: "🏋️",
     bulgarian_squat: "🦵",
     seated_shoulder_press: "🧍‍♂️🏋️",
-    inclined_dumbbell_press: "📐"
+    inclined_dumbbell_press: "📐",
+    tricep_pushdown:"💪"
   };
 
   // Draw the initial canvas message
