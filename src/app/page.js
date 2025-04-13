@@ -1,11 +1,12 @@
 "use client"
 import { useEffect, useRef, useState } from 'react';
 import POSE_CONNECTIONS from '@mediapipe/pose';
+import { analyzePose } from '@/utils/Analysze';
 
 export default function Home() {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
-  const [exercise, setExercise] = useState('squat');
+  const [exercise, setExercise] = useState('seated_shoulder_press');
   const [feedback, setFeedback] = useState('');
   const [connectionError, setConnectionError] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -131,65 +132,13 @@ export default function Home() {
           lineWidth: 0.5,
         });
 
-        analyzePose(results.poseLandmarks);
+        analyzePose(exercise,results.poseLandmarks,setFeedback);
       }
       canvasCtx.restore();
     }
 
-    function analyzePose(landmarks) {
-      if (exercise === 'squat') {
-        const hip = landmarks[24]; // right hip
-        const knee = landmarks[26]; // right knee
-        const ankle = landmarks[28]; // right ankle
-
-        if (hip && knee && ankle) {
-          const angle = getAngle(hip, knee, ankle);
-          if (angle < 90) {
-            setFeedback('Great! You are squatting deep enough.');
-          } else {
-            setFeedback('Go lower! Try to get your hips closer to your knees.');
-          }
-        }
-      } else if (exercise === 'pushup') {
-        // Basic pushup detection (simplified)
-        const shoulder = landmarks[12]; // right shoulder
-        const elbow = landmarks[14]; // right elbow
-        const wrist = landmarks[16]; // right wrist
-        
-        if (shoulder && elbow && wrist) {
-          const angle = getAngle(shoulder, elbow, wrist);
-          if (angle < 100) {
-            setFeedback('Good form! Your arms are bent at the correct angle.');
-          } else {
-            setFeedback('Lower your chest more. Try to bend your elbows to about 90 degrees.');
-          }
-        }
-      } else if (exercise === 'lunge') {
-        // Basic lunge detection (simplified)
-        const hip = landmarks[24]; // right hip
-        const knee = landmarks[26]; // right knee
-        const ankle = landmarks[28]; // right ankle
-        
-        if (hip && knee && ankle) {
-          const angle = getAngle(hip, knee, ankle);
-          if (angle > 80 && angle < 100) {
-            setFeedback('Great lunge form! Your knee is at a good angle.');
-          } else {
-            setFeedback('Adjust your stance to create a 90-degree angle at your knee.');
-          }
-        }
-      }
-    }
-
-    function getAngle(a, b, c) {
-      const ab = { x: a.x - b.x, y: a.y - b.y };
-      const cb = { x: c.x - b.x, y: c.y - b.y };
-      const dot = ab.x * cb.x + ab.y * cb.y;
-      const magAB = Math.sqrt(ab.x * ab.x + ab.y * ab.y);
-      const magCB = Math.sqrt(cb.x * cb.x + cb.y * cb.y);
-      const angle = Math.acos(dot / (magAB * magCB));
-      return (angle * 180) / Math.PI;
-    }
+   
+   
 
     return () => {
       try {
