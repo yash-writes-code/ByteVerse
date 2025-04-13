@@ -30,6 +30,9 @@ Whether you're doing squats, Bulgarian split squats, or dumbbell shoulder presse
 
 ---
 
+Prototype Demo:
+https://drive.google.com/file/d/183A6JSxWYJCHmT1RX04Axs6HWcgYDA_0/view?usp=drive_link
+
 ## 📦 Tech Stack
 
 - ⚙️ **Next.js** – Frontend & server logic
@@ -53,3 +56,5 @@ git clone https://github.com/yourusername/ByteVerse.git
 cd ByteVerse
 npm install
 npm run dev
+
+
