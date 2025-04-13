@@ -49,7 +49,7 @@ Whether you're doing squats, Bulgarian split squats, or dumbbell shoulder presse
 ### 📥 Installation
 
 ```bash
-git clone https://github.com/yourusername/form-fit.git
-cd form-fit
+git clone https://github.com/yourusername/ByteVerse.git
+cd ByteVerse
 npm install
 npm run dev
